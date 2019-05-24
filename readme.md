@@ -31,7 +31,7 @@
         登录 L name passwd
         查找 F name word
         记录 K name
-        退出 Q
+        退出 E
 
 
 

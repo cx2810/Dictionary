@@ -88,36 +88,24 @@ class Database:
             return True
         return False
 
-    def do_find(self,name,word):
-        sql = "select mean from words where word = '%s';"%word
+    def do_find(self, name, word):
+        sql = "select mean from words where word = '%s';" % word
         self.cur.execute(sql)
-        re = self.cur.fetchone()
-        if re:
-            sql = "insert into hist(name,word,time) values (%s,%s,now());"
-            try:
-                self.cur.execute(sql, [name, word])
-                self.db.commit()
-            except Exception as e:
-                print(e)
-                self.db.rollback()
-                return False
-            return re[0]
+        return self.cur.fetchone()
 
-        return False
-    def do_look(self,name):
-        sql = "select * from hist where name = %s"
+    def insert_hist(self,name,word):
+        sql = "insert into hist(name,word,time) values (%s,%s,now());"
         try:
-            self.cur.execute(sql,[name])
+            self.cur.execute(sql, [name, word])
+            self.db.commit()
         except Exception as e:
             print(e)
-            return False
-        re = self.cur.fetchall()
-        if re:
-            return re
-        else:
-            return False
+            self.db.rollback()
 
-
+    def do_look(self, name):
+        sql = "select name,word,time from hist where name = %s order by id desc limit 10"
+        self.cur.execute(sql, [name])
+        return self.cur.fetchall()
 
     def hash_md5(selef, name, passwd):
         """
